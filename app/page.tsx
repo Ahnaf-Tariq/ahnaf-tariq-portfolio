@@ -1,3 +1,4 @@
+import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
 import StarBackground from "@/components/StarBackground";
 import ToggleTheme from "@/components/ToggleTheme";
@@ -13,6 +14,11 @@ export default function Home() {
 
       {/* navbar */}
       <Navbar />
+
+      {/* main content */}
+      <main>
+        <Hero />
+      </main>
     </div>
   );
 }
