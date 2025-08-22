@@ -1,10 +1,14 @@
+import StarBackground from "@/components/StarBackground";
 import ToggleTheme from "@/components/ToggleTheme";
 
 export default function Home() {
   return (
-    <div>
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* toogle theme */}
       <ToggleTheme />
+
+      {/* background effects */}
+      <StarBackground />
     </div>
   );
 }
