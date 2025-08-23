@@ -30,9 +30,6 @@ const categories = ["all", "frontend", "backend", "tools"];
 const Skills = () => {
   const [activeCategory, setActiveCategory] = useState("all");
 
-  const filteredSkills = skills.filter(
-    (skill) => activeCategory === "all" || activeCategory === skill.category
-  );
   return (
     <section id="skills" className="py-24 px-4 relative bg-secondary/30">
       <div className="container mx-auto max-w-5xl">
