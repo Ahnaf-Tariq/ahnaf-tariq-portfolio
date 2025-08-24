@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import { IoMdMail, IoMdSend } from "react-icons/io";
 import { IoLocation } from "react-icons/io5";
+import { toast } from "react-toastify";
 
 const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -20,9 +21,11 @@ const Contact = () => {
     setIsSubmitting(true);
 
     setTimeout(() => {
+      toast.success("Message sent, I'll try to react to you asap");
+      (e.target as HTMLFormElement).reset();
+
       setIsSubmitting(false);
-      alert("Message sent!");
-    }, 2000); // 2 seconds
+    }, 1500); // 1.5 seconds
   };
   return (
     <section id="contact" className="py-24 px-4 relative bg-secondary/30">
@@ -175,6 +178,7 @@ const Contact = () => {
                   id="message"
                   name="message"
                   required
+                  minLength={8}
                   className="w-full px-4 py-3 rounded-md border border-input bg-background focus:outline-hidden foucs:ring-2 focus:ring-primary resize-none"
                   placeholder="Hello, I'd like to talk about..."
                 />

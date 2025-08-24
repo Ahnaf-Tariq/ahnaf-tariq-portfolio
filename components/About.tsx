@@ -23,10 +23,9 @@ const About = () => {
             </p>
 
             <p className="text-muted-foreground">
-              I'm passionate about creating elegant solutions to complex
-              problems, and I'm constantly learning new technologies and
-              techniques to stay at the forefront of the ever-evolving web
-              landscape.
+              I enjoy turning complex challenges into simple, elegant solutions
+              while continuously exploring new tools and practices to stay ahead
+              in the fast-moving world of web development.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center">
