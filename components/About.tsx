@@ -1,5 +1,5 @@
 import React from "react";
-import { FaBriefcase, FaCode, FaUser, FaUserTie } from "react-icons/fa";
+import { FaCode, FaLightbulb, FaRocket } from "react-icons/fa";
 
 const About = () => {
   return (
@@ -35,10 +35,11 @@ const About = () => {
               </a>
 
               <a
-                href=""
+                href="/Ahnaf-Tariq-Resume.pdf"
+                target="_blank"
                 className="px-6 py-2 rounded-full border border-primary text-primary hover:bg-primary/10 transition-colors duration-300"
               >
-                Download CV
+                View CV
               </a>
             </div>
           </div>
@@ -50,7 +51,7 @@ const About = () => {
                   <FaCode className="size-6 text-primary" />
                 </div>
                 <div className="text-left">
-                  <h4 className="font-semibold text-lg"> Web Development</h4>
+                  <h4 className="font-semibold text-lg">Web Development</h4>
                   <p className="text-muted-foreground">
                     Creating responsive websites and web applications with
                     modern frameworks.
@@ -61,13 +62,13 @@ const About = () => {
             <div className="gradient-border p-6 card-hover">
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-full bg-primary/10">
-                  <FaUser className="size-6 text-primary" />
+                  <FaLightbulb className="size-6 text-primary" />
                 </div>
                 <div className="text-left">
-                  <h4 className="font-semibold text-lg">UI/UX Design</h4>
+                  <h4 className="font-semibold text-lg">Problem Solving</h4>
                   <p className="text-muted-foreground">
-                    Designing intuitive user interfaces and seamless user
-                    experiences.
+                    Turning complex challenges into simple, efficient solutions
+                    through logical thinking and clean code.
                   </p>
                 </div>
               </div>
@@ -75,14 +76,14 @@ const About = () => {
             <div className="gradient-border p-6 card-hover">
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-full bg-primary/10">
-                  <FaBriefcase className="size-6 text-primary" />
+                  <FaRocket className="size-6 text-primary" />
                 </div>
 
                 <div className="text-left">
-                  <h4 className="font-semibold text-lg">Project Management</h4>
+                  <h4 className="font-semibold text-lg">Continuous Learning</h4>
                   <p className="text-muted-foreground">
-                    Leading projects from conception to completion with agile
-                    methodologies.
+                    Always exploring new tools, frameworks, and techniques to
+                    stay sharp and ahead in the ever-evolving web landscape.
                   </p>
                 </div>
               </div>

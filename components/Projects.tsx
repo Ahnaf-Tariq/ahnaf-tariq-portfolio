@@ -6,32 +6,33 @@ import { TbExternalLink } from "react-icons/tb";
 const projects = [
   {
     id: 1,
-    title: "SaaS Landing Page",
-    description: "A beautiful landing page app using React and Tailwind.",
-    image: "/projects/project1.png",
-    tags: ["React", "TailwindCSS", "Supabase"],
-    demoUrl: "#",
-    githubUrl: "#",
+    title: "E-commerce Website",
+    description:
+      "A full-stack e-commerce platform with frontend, backend, and admin panel, featuring product management, add-to-cart, order management, and secure Stripe payment integration",
+    image: "/projects/picture1.png",
+    tags: ["React.js", "Node.js", "Express.js", "MongoDB", "Stripe"],
+    liveUrl: "https://e-commerce-frontend-cyan-seven.vercel.app/",
+    githubUrl: "https://github.com/Ahnaf-Tariq/E-commerce-mern-website",
   },
   {
     id: 2,
-    title: "Orbit Analytics Dashboard",
+    title: "Food Delivery Website",
     description:
-      "Interactive analytics dashboard with data visualization and filtering capabilities.",
-    image: "/projects/project2.png",
-    tags: ["TypeScript", "D3.js", "Next.js"],
-    demoUrl: "#",
-    githubUrl: "",
+      "A complete food delivery web application with frontend, backend, and admin panel for managing restaurants, menus, and orders.",
+    image: "/projects/picture2.png",
+    tags: ["React.js", "Node.js", "Express.js", "MongoDB"],
+    liveUrl: "",
+    githubUrl: "https://github.com/Ahnaf-Tariq/FoodDelivery-mern-website",
   },
   {
     id: 3,
-    title: "E-commerce Platform",
+    title: "Real Time Chat App",
     description:
-      "Full-featured e-commerce platform with user authentication and payment processing.",
-    image: "/projects/project3.png",
-    tags: ["React", "Node.js", "Stripe"],
-    demoUrl: "#",
-    githubUrl: "#",
+      "A fully real-time chat application built with Next.js and Firebase, featuring instant messaging, authentication, and responsive UI.",
+    image: "/projects/picture3.png",
+    tags: ["Next.js", "TailwindCSS", "Firebase"],
+    liveUrl: "https://echo-chat-app-next.vercel.app/",
+    githubUrl: "https://github.com/Ahnaf-Tariq/EchoChatApp-next",
   },
 ];
 
@@ -81,7 +82,7 @@ const Projects = () => {
                 </p>
                 <div className="flex space-x-3">
                   <a
-                    href={project.demoUrl}
+                    href={project.liveUrl}
                     target="_blank"
                     className="text-foreground/80 hover:text-primary transition-colors duration-300"
                   >
@@ -104,7 +105,7 @@ const Projects = () => {
           <a
             className="cosmic-button w-fit flex items-center mx-auto gap-2"
             target="_blank"
-            href="https://github.com/machadop1407"
+            href="https://github.com/Ahnaf-Tariq"
           >
             Check My Github <BsArrowRight size={16} />
           </a>

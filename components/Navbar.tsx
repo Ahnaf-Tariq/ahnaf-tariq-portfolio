@@ -19,7 +19,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.screenY > 10);
+      setIsScrolled(window.scrollY > 10);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -28,8 +28,8 @@ const Navbar = () => {
   return (
     <nav
       className={cn(
-        "fixed w-full z-40 transition-all duration-300",
-        isScrolled ? "py-3 bg-background/80 backdrop-blur-md shadow-xs" : "py-5"
+        "fixed w-full py-5 z-40 transition-all duration-300",
+        isScrolled && "bg-background/80 backdrop-blur-md shadow-xs"
       )}
     >
       <div className="container flex items-center justify-between">
