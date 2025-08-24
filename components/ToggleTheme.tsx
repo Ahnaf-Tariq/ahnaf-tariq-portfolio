@@ -5,16 +5,17 @@ import { BiMoon } from "react-icons/bi";
 import { IoSunnyOutline } from "react-icons/io5";
 
 export const ToggleTheme = () => {
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
-    if (storedTheme === "dark") {
+    if (storedTheme === "light") {
+      setIsDarkMode(false);
+      document.documentElement.classList.remove("dark");
+    } else {
       setIsDarkMode(true);
       document.documentElement.classList.add("dark");
-    } else {
-      localStorage.setItem("theme", "light");
-      setIsDarkMode(false);
+      localStorage.setItem("theme", "dark");
     }
   }, []);
 
@@ -34,7 +35,7 @@ export const ToggleTheme = () => {
     <button
       onClick={toggleTheme}
       className={cn(
-        "fixed max-sm:hidden top-[13px] right-5 z-50 p-2 rounded-full cursor-pointer transition-colors duration-300",
+        "p-2 rounded-full cursor-pointer transition-colors duration-300",
         "focus:outline-hidden"
       )}
     >

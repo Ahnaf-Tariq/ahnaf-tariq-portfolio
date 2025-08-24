@@ -41,7 +41,7 @@ const StarBackground = () => {
       (window.innerWidth * window.innerHeight) / 10000
     );
 
-    let newStars: Star[] = [];
+    const newStars: Star[] = [];
 
     for (let i = 0; i < numOfStars; i++) {
       newStars.push({
@@ -58,7 +58,7 @@ const StarBackground = () => {
 
   const generateMeteors = () => {
     const numOfMeteors = 4;
-    let newMeteors: Meteor[] = [];
+    const newMeteors: Meteor[] = [];
 
     for (let i = 0; i < numOfMeteors; i++) {
       newMeteors.push({

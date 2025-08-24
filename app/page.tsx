@@ -1,20 +1,16 @@
-import About from "@/components/About";
-import Contact from "@/components/Contact";
-import Experience from "@/components/Experience";
+import About from "@/components/sections/About";
+import Contact from "@/components/sections/Contact";
+import Experience from "@/components/sections/Experience";
 import Footer from "@/components/Footer";
-import Hero from "@/components/Hero";
+import Hero from "@/components/sections/Hero";
 import Navbar from "@/components/Navbar";
-import Projects from "@/components/Projects";
-import Skills from "@/components/Skills";
+import Projects from "@/components/sections/Projects";
+import Skills from "@/components/sections/Skills";
 import StarBackground from "@/components/StarBackground";
-import ToggleTheme from "@/components/ToggleTheme";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      {/* toogle theme */}
-      {/* <ToggleTheme /> */}
-
       {/* background effects */}
       <StarBackground />
 

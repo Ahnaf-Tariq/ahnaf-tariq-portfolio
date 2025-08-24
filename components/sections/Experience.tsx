@@ -1,5 +1,5 @@
+import Image from "next/image";
 import React from "react";
-import { FaReact, FaUsers, FaCodeBranch } from "react-icons/fa";
 
 const Experience = () => {
   const skills = [
@@ -23,10 +23,12 @@ const Experience = () => {
         <div className="gradient-border p-6 sm:p-8 rounded-xl bg-card shadow-lg">
           {/* Header */}
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-2 mb-6">
-            <img
+            <Image
               src="/getweys-logo.webp"
               alt="Getweys Logo"
               className="size-16 sm:size-20 rounded-lg object-contain bg-white p-1"
+              width={40}
+              height={40}
             />
             <div className="flex flex-col md:flex-row justify-between items-start sm:container gap-4 md:gap-2">
               <div className="space-y-1">
