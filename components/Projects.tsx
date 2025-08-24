@@ -65,8 +65,11 @@ const Projects = () => {
 
               <div className="p-6">
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {project.tags.map((tag) => (
-                    <span className="px-2 py-1 rounded-full text-xs font-medium border border-primary text-primary hover:bg-primary/10 transition-colors duration-300 cursor-pointer">
+                  {project.tags.map((tag, i) => (
+                    <span
+                      key={i}
+                      className="px-2 py-1 rounded-full text-xs font-medium border border-primary text-primary hover:bg-primary/10 transition-colors duration-300 cursor-pointer"
+                    >
                       {tag}
                     </span>
                   ))}
