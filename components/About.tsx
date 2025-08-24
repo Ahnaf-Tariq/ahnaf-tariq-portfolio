@@ -3,7 +3,7 @@ import { FaCode, FaLightbulb, FaRocket } from "react-icons/fa";
 
 const About = () => {
   return (
-    <section id="about" className="py-24 px-4 relative">
+    <section id="about" className="py-20 px-4 relative">
       {" "}
       <div className="container max-w-5xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
@@ -46,11 +46,11 @@ const About = () => {
 
           <div className="grid grid-cols-1 gap-6">
             <div className="gradient-border p-6 card-hover">
-              <div className="flex items-start gap-4">
+              <div className="flex flex-col sm:flex-row items-start gap-4">
                 <div className="p-3 rounded-full bg-primary/10">
-                  <FaCode className="size-6 text-primary" />
+                  <FaCode className="size-5 sm:size-6 text-primary" />
                 </div>
-                <div className="text-left">
+                <div className="text-left space-y-1">
                   <h4 className="font-semibold text-lg">Web Development</h4>
                   <p className="text-muted-foreground">
                     Creating responsive websites and web applications with
@@ -60,11 +60,11 @@ const About = () => {
               </div>
             </div>
             <div className="gradient-border p-6 card-hover">
-              <div className="flex items-start gap-4">
+              <div className="flex flex-col sm:flex-row items-start gap-4">
                 <div className="p-3 rounded-full bg-primary/10">
-                  <FaLightbulb className="size-6 text-primary" />
+                  <FaLightbulb className="size-5 sm:size-6 text-primary" />
                 </div>
-                <div className="text-left">
+                <div className="text-left space-y-1">
                   <h4 className="font-semibold text-lg">Problem Solving</h4>
                   <p className="text-muted-foreground">
                     Turning complex challenges into simple, efficient solutions
@@ -74,12 +74,12 @@ const About = () => {
               </div>
             </div>
             <div className="gradient-border p-6 card-hover">
-              <div className="flex items-start gap-4">
+              <div className="flex flex-col sm:flex-row items-start gap-4">
                 <div className="p-3 rounded-full bg-primary/10">
-                  <FaRocket className="size-6 text-primary" />
+                  <FaRocket className="size-5 sm:size-6 text-primary" />
                 </div>
 
-                <div className="text-left">
+                <div className="text-left space-y-1">
                   <h4 className="font-semibold text-lg">Continuous Learning</h4>
                   <p className="text-muted-foreground">
                     Always exploring new tools, frameworks, and techniques to

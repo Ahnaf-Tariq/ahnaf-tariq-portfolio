@@ -21,7 +21,6 @@ const projects = [
       "A complete food delivery web application with frontend, backend, and admin panel for managing restaurants, menus, and orders.",
     image: "/projects/picture2.png",
     tags: ["React.js", "Node.js", "Express.js", "MongoDB"],
-    liveUrl: "",
     githubUrl: "https://github.com/Ahnaf-Tariq/FoodDelivery-mern-website",
   },
   {
@@ -38,7 +37,7 @@ const projects = [
 
 const Projects = () => {
   return (
-    <section id="projects" className="py-24 px-4 relative">
+    <section id="projects" className="py-20 px-4 relative">
       <div className="container mx-auto max-w-5xl">
         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center">
           {" "}
