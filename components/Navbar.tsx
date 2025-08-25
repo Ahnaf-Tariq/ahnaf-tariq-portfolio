@@ -17,6 +17,7 @@ const navItems = [
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeNavLink, setActiveNavLink] = useState(navItems[0].href);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,11 +47,15 @@ const Navbar = () => {
 
         {/* desktop nav */}
         <div className="hidden sm:flex space-x-8">
-          {navItems.map((item, key) => (
+          {navItems.map((item, index) => (
             <a
-              key={key}
+              key={index}
               href={item.href}
-              className="text-foreground/80 hover:text-primary transition-colors duration-300"
+              onClick={() => setActiveNavLink(item.href)}
+              className={cn(
+                "text-foreground/80 hover:text-primary transition-colors duration-300",
+                activeNavLink === item.href && "text-primary"
+              )}
             >
               {item.name}
             </a>

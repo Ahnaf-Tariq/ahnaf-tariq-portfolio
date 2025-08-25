@@ -64,15 +64,15 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+    --background: 267 25% 85%; /* Medium light purple */
+    --foreground: 267 30% 20%; /* Dark purple for text */
 
-    --card: 0 0% 100%;
+    --card: 267 20% 90%; /* Light purple cards */
 
-    --primary: 250 47% 60%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 267 70% 55%; /* Rich purple */
+    --primary-foreground: 267 25% 95%; /* Very light text on purple */
 
-    --border: 214 32% 91%;
+    --border: 267 20% 75%;
   }
 
   .dark {

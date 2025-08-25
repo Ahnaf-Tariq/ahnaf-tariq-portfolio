@@ -5,21 +5,53 @@ import { FaGithub, FaLinkedin, FaPhoneAlt } from "react-icons/fa";
 import { IoMdMail, IoMdSend } from "react-icons/io";
 import { IoLocation } from "react-icons/io5";
 import { toast } from "react-toastify";
+import emailjs from "@emailjs/browser";
 
 const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    try {
+      setIsSubmitting(true);
 
-    setIsSubmitting(true);
+      // email.js
+      const serviceID = "service_t57u7bf";
+      const templateID = "template_dqfzglh";
+      const publicKey = "wuXJKpzuKiSJzHxWJ";
 
-    setTimeout(() => {
-      toast.success("Thanks for your message, I'll try to react to you asap");
-      (e.target as HTMLFormElement).reset();
+      const form = e.target as HTMLFormElement;
+      const formData = new FormData(form);
+
+      const templateParams = {
+        from_name: formData.get("name") as string,
+        from_email: formData.get("email") as string,
+        message: formData.get("message") as string,
+        to_email: "ahnafhamid7@gmail.com",
+      };
+
+      const response = await emailjs.send(
+        serviceID,
+        templateID,
+        templateParams,
+        publicKey
+      );
+
+      if (response.status === 200) {
+        toast.success(
+          "Thanks for your message, I'll try to reach out to you asap"
+        );
+        form.reset();
+      } else {
+        toast.error("Something went wrong, please try again later.");
+      }
 
       setIsSubmitting(false);
-    }, 1500); // 1.5 seconds
+    } catch (error) {
+      console.error("Error sending email:", error);
+      toast.error("Something went wrong, please try again later.");
+      setIsSubmitting(false);
+    }
   };
 
   const handleMailClick = (e: React.MouseEvent) => {
@@ -95,7 +127,7 @@ const Contact = () => {
                 <div>
                   <h4 className="font-medium">Location</h4>
                   <a className="text-muted-foreground hover:text-primary transition-colors">
-                    Vancouver, BC, Canada
+                    Karachi, Pakistan
                   </a>
                 </div>
               </div>
@@ -122,13 +154,10 @@ const Contact = () => {
             </div>
           </div>
 
-          <div
-            className="bg-card p-8 rounded-lg shadow-xs"
-            onSubmit={handleSubmit}
-          >
+          <div className="bg-card p-8 rounded-lg shadow-xs">
             <h3 className="text-2xl font-semibold mb-6"> Send a Message</h3>
 
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label
                   htmlFor="name"
