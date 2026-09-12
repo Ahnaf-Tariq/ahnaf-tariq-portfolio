@@ -1,26 +1,74 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap");
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-primary: #f5f1ea;
+  --bg-dark: #221d19;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b6b64;
+  --text-tertiary: #a3a099;
+  --text-on-dark: #f5f1ea;
+  --text-on-dark-muted: rgba(245, 241, 234, 0.6);
+  --border-light: #e2ddd2;
+  --border-dark: rgba(245, 241, 234, 0.15);
+  --accent-indigo: #3d3b63;
+  --accent-indigo-light: #a6a3d6;
+  --serif: "Fraunces", serif;
+  --mono: "JetBrains Mono", monospace;
+  --sans: "Inter", sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #221d19;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3d3b63;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #221d19 transparent;
+}
+.rail-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.ghost-title {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--text-primary);
+}
+
+.experience-row:hover .experience-logo {
+  opacity: 1;
+}
+
+.experience-row:hover .experience-name {
+  color: var(--text-primary);
+}
+
+.work-row:hover {
+  color: var(--text-primary);
+}
+
+.nav-overlay-link {
+  transition: color 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
