@@ -19,26 +19,12 @@
 }
 
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #221d19;
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #3d3b63;
+  display: none;
 }
 
 * {
-  scrollbar-width: thin;
-  scrollbar-color: #221d19 transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 .rail-text {
   writing-mode: vertical-rl;

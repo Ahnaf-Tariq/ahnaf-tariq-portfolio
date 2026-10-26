@@ -1,6 +1,6 @@
 "use client";
 
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
@@ -8,9 +8,9 @@ import { FaArrowRight } from "react-icons/fa";
 import Image from "next/image";
 import ahnafImg from "@/public/images/ahnaf.jpeg";
 import { cn } from "@/lib/utils";
+import SiteSidebar from "@/components/site-sidebar";
 import {
   EXPERIENCE,
-  NAV_ITEMS,
   PANEL_THEMES,
   SERVICES,
   SKILL_CATEGORIES,
@@ -20,6 +20,8 @@ import {
 } from "@/data/data";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 function usePktClock() {
   const [time, setTime] = useState("--:--");
@@ -42,17 +44,38 @@ function usePktClock() {
 }
 
 export default function Home() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [hoveredExp, setHoveredExp] = useState<string>(EXPERIENCE[0].name);
+  const [activeSkillCategory, setActiveSkillCategory] = useState<string>("all");
+  const [hoveredWork, setHoveredWork] = useState<string | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const stRef = useRef<ScrollTrigger | null>(null);
   const panelRefs = useRef<(HTMLElement | null)[]>([]);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [hoveredWork, setHoveredWork] = useState<string>(WORK_PROJECTS[0].id);
-  const [hoveredExp, setHoveredExp] = useState<string>(EXPERIENCE[0].name);
-  const [showAllWork, setShowAllWork] = useState(false);
-  const [activeSkillCategory, setActiveSkillCategory] = useState<string>("all");
+  const workIntroRef = useRef<HTMLDivElement>(null);
+  const workStageRef = useRef<HTMLDivElement>(null);
+  const mosaicRef = useRef<HTMLDivElement>(null);
+  const workWordLeftRef = useRef<HTMLSpanElement>(null);
+  const workWordRightRef = useRef<HTMLSpanElement>(null);
+  const workListRef = useRef<HTMLDivElement>(null);
+  const panelLeftsRef = useRef<number[]>([]);
+
+  const mosaicColumns = [0, 1, 2].map((c) =>
+    Array.from(
+      { length: 9 },
+      (_, r) => WORK_PROJECTS[(c * 3 + r) % WORK_PROJECTS.length],
+    ),
+  );
+
+  const measurePanels = () => {
+    const track = trackRef.current;
+    if (!track) return;
+    const trackLeft = track.getBoundingClientRect().left;
+    panelLeftsRef.current = panelRefs.current.map((p) =>
+      p ? p.getBoundingClientRect().left - trackLeft : 0,
+    );
+  };
 
   const visibleSkills =
     activeSkillCategory === "all"
@@ -86,13 +109,87 @@ export default function Home() {
             scrub: 0.6,
             pin: true,
             invalidateOnRefresh: true,
+            onRefresh: measurePanels,
             onUpdate: (self) => {
-              setActiveIndex(Math.round(self.progress * (panels.length - 1)));
+              // active panel = the last one whose left edge has passed screen centre
+              const probe =
+                self.scroll() - self.start + window.innerWidth * 0.5;
+              let idx = 0;
+              panelLeftsRef.current.forEach((left, i) => {
+                if (left <= probe) idx = i;
+              });
+              setActiveIndex(idx);
             },
           },
         });
 
         stRef.current = tween.scrollTrigger ?? null;
+
+        const intro = workIntroRef.current;
+        const stage = workStageRef.current;
+        const box = mosaicRef.current;
+        const wordL = workWordLeftRef.current;
+        const wordR = workWordRightRef.current;
+
+        if (intro && stage && box && wordL && wordR) {
+          const cols = box.querySelectorAll<HTMLElement>(".mosaic-col");
+          const vw = () => window.innerWidth;
+          const boxW = () => Math.max(vw() - 64, window.innerHeight * (16 / 9));
+
+          gsap.set(box, { xPercent: -50, yPercent: -50 });
+
+          const grow = { s: 0 };
+          const applyGrow = () => {
+            const s = grow.s;
+            const half = (boxW() * s) / 2;
+            const d = (wordL.offsetWidth - wordR.offsetWidth) / 2;
+            gsap.set(box, { scale: s, x: d * (1 - s) });
+            gsap.set(wordL, { x: -(d * s + half) });
+            gsap.set(wordR, { x: -d * s + half });
+          };
+          applyGrow();
+
+          const tl = gsap.timeline({
+            defaults: { ease: "none" },
+            scrollTrigger: {
+              trigger: intro,
+              containerAnimation: tween,
+              start: "left left",
+              end: "right right",
+              scrub: true,
+              invalidateOnRefresh: true,
+              onRefresh: applyGrow,
+            },
+          });
+
+          tl.fromTo(stage, { x: 0 }, { x: () => vw(), duration: 1 }, 0);
+
+          tl.fromTo(
+            grow,
+            { s: 0 },
+            { s: 1, ease: "power2.inOut", duration: 0.75, onUpdate: applyGrow },
+            0.06,
+          );
+
+          tl.fromTo(
+            cols[0],
+            { yPercent: -10 },
+            { yPercent: 10, duration: 1 },
+            0,
+          );
+          tl.fromTo(
+            cols[1],
+            { yPercent: 12 },
+            { yPercent: -12, duration: 1 },
+            0,
+          );
+          tl.fromTo(
+            cols[2],
+            { yPercent: -10 },
+            { yPercent: 10, duration: 1 },
+            0,
+          );
+        }
 
         panels.forEach((panel, i) => {
           if (i === 0) return;
@@ -119,6 +216,78 @@ export default function Home() {
           ScrollTrigger.refresh();
         }, 100);
       } else {
+        const intro = workIntroRef.current;
+        const stage = workStageRef.current;
+        const box = mosaicRef.current;
+        const wordT = workWordLeftRef.current;
+        const wordB = workWordRightRef.current;
+
+        if (intro && stage && box && wordT && wordB) {
+          const cols = box.querySelectorAll<HTMLElement>(".mosaic-col");
+
+          const grow = { s: 0 };
+          const applyGrow = () => {
+            const half = (stage.offsetHeight * grow.s) / 2;
+            gsap.set(box, { scale: grow.s });
+            gsap.set(wordT, { y: -half });
+            gsap.set(wordB, { y: half });
+          };
+          applyGrow();
+
+          const tl = gsap.timeline({
+            defaults: { ease: "none" },
+            scrollTrigger: {
+              trigger: intro,
+              start: "top top",
+              end: "bottom bottom",
+              pin: stage,
+              pinSpacing: false,
+              anticipatePin: 1,
+              scrub: 0.4,
+              invalidateOnRefresh: true,
+              onRefresh: applyGrow,
+            },
+          });
+
+          tl.fromTo(
+            grow,
+            { s: 0 },
+            { s: 1, ease: "power2.inOut", duration: 0.75, onUpdate: applyGrow },
+            0.06,
+          );
+          tl.fromTo(
+            cols[0],
+            { yPercent: -10 },
+            { yPercent: 10, duration: 1 },
+            0,
+          );
+          tl.fromTo(
+            cols[1],
+            { yPercent: 12 },
+            { yPercent: -12, duration: 1 },
+            0,
+          );
+          tl.fromTo(
+            cols[2],
+            { yPercent: -10 },
+            { yPercent: 10, duration: 1 },
+            0,
+          );
+        }
+
+        panels.forEach((panel, index) => {
+          ScrollTrigger.create({
+            trigger: panel,
+            start: "top center",
+            end: "bottom center",
+            onEnter: () => setActiveIndex(index),
+            onEnterBack: () => setActiveIndex(index),
+            onRefresh: (self) => {
+              if (self.isActive) setActiveIndex(index);
+            },
+          });
+        });
+
         panels.forEach((panel, i) => {
           if (i === 0) return;
           gsap.fromTo(
@@ -131,13 +300,18 @@ export default function Home() {
               ease: "power3.out",
               stagger: 0.08,
               scrollTrigger: {
-                trigger: panel,
+                // for the work panel, wait until the list itself (not the pinned intro) arrives
+                trigger: i === 3 ? (workListRef.current ?? panel) : panel,
                 start: "top 75%",
                 toggleActions: "play none none reverse",
               },
             },
           );
         });
+
+        setTimeout(() => {
+          ScrollTrigger.refresh();
+        }, 100);
       }
 
       gsap.from(".hero-title-word", {
@@ -163,20 +337,22 @@ export default function Home() {
   }, []);
 
   const goToPanel = (index: number) => {
-    setMenuOpen(false);
-    const panel = panelRefs.current[index];
     const st = stRef.current;
-    if (!panel) return;
 
     if (st) {
-      const progress = index / (panelRefs.current.length - 1);
-      const target = st.start + progress * (st.end - st.start);
+      // desktop: horizontal track pinned to vertical scroll
+      const left = panelLeftsRef.current[index];
+      if (left === undefined) return;
+      const total = st.end - st.start;
       gsap.to(window, {
         duration: 1,
         ease: "power3.inOut",
-        scrollTo: target,
+        scrollTo: st.start + Math.min(left, total),
       });
     } else {
+      // mobile: normal vertical flow
+      const panel = panelRefs.current[index];
+      if (!panel) return;
       gsap.to(window, {
         duration: 1,
         ease: "power3.inOut",
@@ -185,112 +361,39 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get(
+      "section",
+    );
+    if (requested === null) return;
+
+    const index = Number(requested);
+    if (
+      !Number.isInteger(index) ||
+      index < 0 ||
+      index >= panelRefs.current.length
+    ) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      goToPanel(index);
+      window.history.replaceState(null, "", window.location.pathname);
+    }, 500);
+
+    return () => window.clearTimeout(timeout);
+  }, []);
+
   return (
     <div
       ref={rootRef}
       className="relative overflow-x-hidden font-[family-name:var(--sans)] bg-[var(--bg-primary)] text-[var(--text-primary)] antialiased leading-relaxed"
     >
-      <aside
-        style={{ backgroundColor: theme.bg, borderColor: theme.border }}
-        className="fixed top-0 left-0 bottom-0 w-16 border-r z-[300] flex flex-col items-center justify-between pb-6 pt-1 transition-colors duration-500 ease-[cubic-bezier(0.65,0,0.35,1)]"
-      >
-        <button
-          style={{ borderColor: theme.border }}
-          className="w-full bg-transparent border-b cursor-pointer flex flex-col items-center gap-1 py-3.5"
-          aria-label="Open menu"
-          onClick={() => setMenuOpen((prev) => !prev)}
-        >
-          <span
-            style={{ backgroundColor: theme.text }}
-            className="block w-5 h-px transition-colors duration-500"
-          />
-          <span
-            style={{ backgroundColor: theme.text }}
-            className="block w-5 h-px transition-colors duration-500"
-          />
-          <span
-            style={{ backgroundColor: theme.text }}
-            className="block w-5 h-px transition-colors duration-500"
-          />
-        </button>
-
-        <div className="flex flex-col items-center gap-10">
-          <span
-            style={{ color: theme.textMuted }}
-            className="rail-text font-[family-name:var(--mono)] text-[11px] tracking-wide transition-colors duration-500"
-          >
-            Folio — Edition
-          </span>
-          <span
-            style={{ color: theme.text }}
-            className="rail-text font-[family-name:var(--serif)] text-sm font-medium tracking-wide uppercase transition-colors duration-500"
-          >
-            Ahnaf Tariq<span className="font-light text-[7px]">&trade;</span>
-          </span>
-        </div>
-
-        <span
-          style={{ color: theme.textMuted }}
-          className="rail-text font-[family-name:var(--mono)] text-[10px] opacity-60 transition-colors duration-500"
-        >
-          © 2026
-        </span>
-      </aside>
-
-      <div
-        style={{ backgroundColor: theme.bg }}
-        className={cn(
-          "fixed top-0 right-0 bottom-0 left-16 z-[250] transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)]",
-          menuOpen ? "translate-y-0" : "-translate-y-full",
-        )}
-        aria-hidden={!menuOpen}
-      >
-        <button
-          className="absolute top-6 right-6 sm:top-8 sm:right-12 bg-transparent border-none text-[var(--text-on-dark-muted)] text-sm font-[family-name:var(--serif)] uppercase tracking-widest cursor-pointer hover:text-[var(--text-on-dark)]"
-          onClick={() => setMenuOpen(false)}
-        >
-          Close
-        </button>
-        <ul className="h-full flex flex-col justify-center pl-6 md:pl-12 gap-4 md:gap-6">
-          {NAV_ITEMS.map((item, i) => (
-            <li
-              key={item.label}
-              style={
-                {
-                  "--nav-active": theme.text,
-                  "--nav-muted": theme.textMuted,
-                } as CSSProperties
-              }
-            >
-              <button
-                className={cn(
-                  "group nav-overlay-link bg-transparent border-none cursor-pointer flex items-center gap-3 sm:gap-4 md:gap-5 font-[family-name:var(--serif)] text-2xl sm:text-3xl md:text-4xl lg:text-[clamp(2rem,5vw,2.5rem)] uppercase font-medium text-left transition-colors duration-300 hover:text-[var(--nav-active)]",
-                  activeIndex === i
-                    ? "text-[var(--nav-active)]"
-                    : "text-[var(--nav-muted)]",
-                )}
-                onClick={() => goToPanel(i)}
-              >
-                <span className="font-[family-name:var(--mono)] text-sm opacity-70">
-                  {item.num}.
-                </span>
-
-                <span className="relative inline-flex items-center gap-3">
-                  <span>{item.label}</span>
-                  <FaArrowRight className="text-xl -rotate-45 opacity-0 -translate-x-2 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-x-0" />
-                  <span className="absolute bottom-1 left-0 w-full h-[2px] bg-[var(--nav-active)] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100" />
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="fixed bottom-7 right-8 z-[200] flex gap-1.5 items-center font-[family-name:var(--mono)] text-xs text-[var(--text-on-dark)] bg-[rgba(20,18,16,0.85)] px-3.5 py-2 rounded-full backdrop-blur-[6px]">
-        <span>{String(activeIndex + 1).padStart(2, "0")}</span>
-        <span className="opacity-50">/</span>
-        <span>{String(NAV_ITEMS.length).padStart(2, "0")}</span>
-      </div>
+      <SiteSidebar
+        theme={theme}
+        activeIndex={activeIndex}
+        onNavigate={goToPanel}
+      />
 
       <div
         ref={wrapperRef}
@@ -298,7 +401,7 @@ export default function Home() {
       >
         <div
           ref={trackRef}
-          className="flex h-screen w-max will-change-transform max-lg:w-full max-lg:flex-col max-lg:h-auto max-lg:!transform-none"
+          className="flex h-screen w-max will-change-transform max-lg:w-full max-lg:flex-col max-lg:h-auto max-lg:!transform-none max-lg:!will-change-auto"
         >
           <section
             ref={(el) => {
@@ -312,7 +415,7 @@ export default function Home() {
                 <span className="hero-title-word block">Tariq</span>
               </h1>
               <p className="text-[15px] leading-[1.75] text-[var(--text-on-dark-muted)] pt-3.5 max-w-[320px]">
-                Fullstack Engineer based in Pakistan — building fast,
+                MERN Stack Engineer based in Pakistan — building fast,
                 interactive, high-performance web experiences with Next.js,
                 Threejs & Nest.js.
               </p>
@@ -362,7 +465,7 @@ export default function Home() {
               <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-12 items-center">
                 <div className="flex flex-col gap-6 max-w-xl">
                   <p className="reveal text-lg sm:text-xl leading-relaxed text-[var(--text-secondary)] font-light">
-                    Hi, I&apos;m Ahnaf — a Fullstack Engineer with 2+ years of
+                    Hi, I&apos;m Ahnaf — a MERN Stack Engineer with 2+ years of
                     hands-on experience building responsive, high-performance
                     web applications using Next.js, Three.js, and Nest.js.
                   </p>
@@ -458,22 +561,12 @@ export default function Home() {
                   {visibleSkills.map((skill) => (
                     <div
                       key={skill.name}
-                      className="reveal flex flex-col gap-2.5"
+                      className="reveal group flex items-center gap-2.5 border-b border-[var(--border-dark)] py-2 transition-colors duration-300 hover:border-[var(--text-on-dark-muted)]"
                     >
-                      <div className="flex items-baseline justify-between">
-                        <span className="font-[family-name:var(--sans)] font-semibold text-lg text-[var(--text-on-dark)]">
-                          {skill.name}
-                        </span>
-                        <span className="font-[family-name:var(--mono)] text-xs text-[var(--text-on-dark-muted)]">
-                          {skill.level}%
-                        </span>
-                      </div>
-                      <div className="h-[3px] w-full rounded-full bg-[var(--border-dark)] overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-[var(--text-on-dark)]"
-                          style={{ width: `${skill.level}%` }}
-                        />
-                      </div>
+                      <span className="h-2 w-2 shrink-0 rounded-full bg-[var(--text-on-dark-muted)] transition-colors duration-300 group-hover:bg-[var(--text-on-dark)]" />
+                      <span className="font-[family-name:var(--sans)] text-lg font-semibold text-[var(--text-on-dark)] transition-transform duration-300 group-hover:translate-x-1">
+                        {skill.name}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -481,84 +574,197 @@ export default function Home() {
             </div>
           </section>
 
+          {/* ───────────────────────── THE WORK + Chapter III ───────────────────────── */}
           <section
             ref={(el) => {
               panelRefs.current[3] = el;
             }}
-            className="flex-none w-screen h-screen pl-[140px] pr-20 flex flex-col justify-center relative bg-[var(--bg-primary)] text-[var(--text-primary)] max-lg:w-screen max-lg:h-auto max-lg:min-h-screen max-lg:pt-[120px] max-lg:px-6 max-lg:pb-20 max-lg:pl-[88px]"
+            className="flex-none flex w-max h-screen relative bg-[var(--bg-primary)] text-[var(--text-primary)] max-lg:w-screen max-lg:h-auto max-lg:min-h-screen max-lg:flex-col"
           >
-            <div className="grid grid-cols-[300px_1fr] gap-16 items-start max-lg:grid-cols-1">
-              <div className="flex flex-col gap-10 reveal">
-                <span className="block font-[family-name:var(--serif)] uppercase tracking-wide text-[22px] text-[var(--text-primary)]">
+            {/* intro: desktop = 200vw wide (stage is held in place while the track slides),
+                mobile = one pinned screen */}
+            <div
+              ref={workIntroRef}
+              className="relative h-[260svh] w-full shrink-0 lg:h-screen lg:w-[200vw]"
+            >
+              <div
+                ref={workStageRef}
+                className="relative h-[100svh] w-full overflow-hidden bg-[var(--bg-primary)] will-change-transform lg:absolute lg:inset-y-0 lg:left-0 lg:h-auto lg:w-screen"
+              >
+                <div className="absolute inset-y-0 left-16 right-0 flex items-center justify-center">
+                  <div className="flex flex-col items-center gap-[1vh] whitespace-nowrap lg:flex-row lg:gap-[3vw]">
+                    <span
+                      ref={workWordLeftRef}
+                      className="shrink-0 will-change-transform font-[family-name:var(--serif)] uppercase font-light leading-[0.9] tracking-tight text-[clamp(3.5rem,19vw,6rem)] lg:leading-none lg:text-[clamp(5rem,13vw,13rem)]"
+                    >
+                      The
+                    </span>
+                    <span
+                      ref={workWordRightRef}
+                      className="shrink-0 will-change-transform font-[family-name:var(--serif)] uppercase font-light leading-[0.9] tracking-tight text-[clamp(3.5rem,19vw,6rem)] lg:leading-none lg:text-[clamp(5rem,13vw,13rem)]"
+                    >
+                      Work
+                    </span>
+                  </div>
+
+                  {/* the window — mobile: fills the whole area, desktop: 16:9, centred */}
+                  <div
+                    ref={mosaicRef}
+                    className="absolute inset-0 overflow-hidden will-change-transform [container-type:inline-size] lg:inset-auto lg:left-1/2 lg:top-1/2 lg:aspect-video lg:w-[max(calc(100vw_-_4rem),177.78vh)]"
+                  >
+                    <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 gap-[4cqw]">
+                      {mosaicColumns.map((col, c) => (
+                        <div
+                          key={c}
+                          className="mosaic-col shrink-0 flex flex-col gap-[4cqw]"
+                        >
+                          {col.map((p, r) => (
+                            <div
+                              key={r}
+                              className={cn(
+                                "relative aspect-video w-[56cqw] overflow-hidden",
+                                (r < 2 || r > 6) && "lg:hidden",
+                              )}
+                              style={{
+                                filter: c !== 1 ? "blur(0.4cqw)" : undefined,
+                              }}
+                            >
+                              <Image
+                                src={p.image}
+                                alt=""
+                                fill
+                                sizes="60vw"
+                                loading="eager"
+                                className="object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ───── Chapter III list ───── */}
+            <div
+              ref={workListRef}
+              className="w-screen h-screen bg-[#ECE8E3] pl-[120px] pr-16 py-12 grid grid-cols-2 gap-16 max-lg:grid-cols-1 max-lg:gap-8 max-lg:h-auto max-lg:min-h-screen max-lg:pt-[120px] max-lg:px-6 max-lg:pl-[88px] max-lg:pb-20"
+            >
+              {/* left: label + hover frame */}
+              <div className="flex flex-col justify-between">
+                <span className="reveal font-[family-name:var(--serif)] uppercase tracking-wide text-[22px]">
                   Chapter III
                 </span>
-                <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-[var(--bg-secondary)] shadow-sm max-lg:hidden">
-                  {WORK_PROJECTS.map((project) => {
-                    const isSelected =
-                      (hoveredWork || WORK_PROJECTS[0].id) === project.id;
+
+                <div className="reveal relative aspect-video w-full max-w-[380px] border border-[#B9B4AC] max-lg:hidden">
+                  <svg
+                    className={cn(
+                      "absolute inset-0 h-full w-full transition-opacity duration-300",
+                      hoveredWork ? "opacity-0" : "opacity-100",
+                    )}
+                    preserveAspectRatio="none"
+                    viewBox="0 0 100 100"
+                  >
+                    <line
+                      x1="0"
+                      y1="0"
+                      x2="100"
+                      y2="100"
+                      stroke="#B9B4AC"
+                      strokeWidth="1"
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  </svg>
+
+                  {WORK_PROJECTS.slice(0, 4).map((p) => {
+                    const active = hoveredWork === p.id;
                     return (
-                      <Image
-                        key={project.id}
-                        src={project.image}
-                        alt={project.title}
-                        fill
-                        sizes="300px"
+                      <div
+                        key={p.id}
                         className={cn(
-                          "object-cover transition-opacity duration-300 ease-in-out",
-                          isSelected
-                            ? "opacity-100 scale-100"
-                            : "opacity-0 scale-105 pointer-events-none",
+                          "absolute inset-0 transition-[clip-path] duration-700 ease-[cubic-bezier(0.65,0,0.35,1)]",
+                          active
+                            ? "z-10 [clip-path:inset(0_0_0_0)]"
+                            : "z-0 [clip-path:inset(0_0_100%_0)]",
                         )}
-                        priority={project.id === WORK_PROJECTS[0].id}
-                      />
+                      >
+                        <Image
+                          src={p.image}
+                          alt={p.title}
+                          fill
+                          sizes="380px"
+                          className={cn(
+                            "object-cover transition-transform duration-700 ease-out",
+                            active ? "scale-100" : "scale-110",
+                          )}
+                        />
+                      </div>
                     );
                   })}
                 </div>
               </div>
-              <div>
-                <span className="reveal block font-[family-name:var(--mono)] text-xs tracking-[2px] uppercase text-[var(--accent-indigo)] mb-6">
-                  Related work
-                </span>
 
-                <div className="max-w-[640px] max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                  <ul className="flex flex-col">
-                    {(showAllWork
-                      ? WORK_PROJECTS
-                      : WORK_PROJECTS.slice(0, 4)
-                    ).map((project) => (
-                      <li
-                        key={project.id}
-                        onMouseEnter={() => setHoveredWork(project.id)}
-                        className="reveal border-b border-[var(--border-light)] transition-all duration-300"
-                      >
-                        <a
-                          href={project.link}
-                          target="_blank"
-                          rel="noreferrer"
+              {/* right: list */}
+              <div className="flex flex-col justify-between">
+                <div>
+                  <span className="reveal block font-[family-name:var(--sans)] text-[11px] uppercase tracking-wide mb-6">
+                    Related work
+                  </span>
+
+                  <ul
+                    onMouseLeave={() => setHoveredWork(null)}
+                    className="flex flex-col"
+                  >
+                    {WORK_PROJECTS.slice(0, 4).map((p) => {
+                      const active = hoveredWork === p.id;
+                      const dim = hoveredWork !== null && !active;
+                      return (
+                        <li
+                          key={p.id}
+                          onMouseEnter={() => setHoveredWork(p.id)}
                           className={cn(
-                            "work-row flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6 py-3 sm:py-[18px] font-[family-name:var(--sans)] font-bold text-2xl sm:text-3xl md:text-4xl lg:text-[42px] transition-colors duration-300",
-                            hoveredWork === project.id
-                              ? "text-[var(--text-primary)]"
-                              : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
+                            "reveal border-b transition-colors duration-300",
+                            active
+                              ? "border-[var(--text-primary)]"
+                              : "border-[#BDB8B0]",
                           )}
                         >
-                          <span>{project.title}</span>
-                          <span className="font-[family-name:var(--mono)] text-xs sm:ml-auto font-normal">
-                            {project.category}
-                          </span>
-                          <span className="text-lg">↗</span>
-                        </a>
-                      </li>
-                    ))}
+                          <a
+                            href={p.link}
+                            target="_blank"
+                            rel="noreferrer"
+                            className={cn(
+                              "flex items-center justify-between py-3 font-[family-name:var(--sans)] text-[clamp(1.5rem,7.5vw,2.5rem)] leading-[1.1] tracking-tight text-[var(--text-primary)] transition-colors duration-300 lg:text-[clamp(2.5rem,4.6vw,4.25rem)] lg:leading-[1.05]",
+                              dim && "lg:text-[#BDB9B3]",
+                            )}
+                          >
+                            {p.title}
+                            <FaArrowRight
+                              className={cn(
+                                "text-3xl -rotate-45 transition-all duration-300 max-lg:hidden",
+                                active
+                                  ? "opacity-100 translate-x-0"
+                                  : "opacity-0 -translate-x-3",
+                              )}
+                            />
+                          </a>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
 
-                <button
-                  onClick={() => setShowAllWork((prev) => !prev)}
-                  className="reveal mt-8 inline-block bg-transparent border-none cursor-pointer font-[family-name:var(--serif)] text-[17px] font-semibold border-b-2 border-[var(--text-primary)] pb-1 text-[var(--text-primary)] transition-opacity hover:opacity-75"
-                >
-                  {showAllWork ? "Show Less" : "View More"}
-                </button>
+                <div className="reveal flex items-end justify-between gap-6 max-lg:flex-col-reverse max-lg:items-start max-lg:mt-10">
+                  <a
+                    href="/works"
+                    className="group inline-flex items-center gap-2 font-[family-name:var(--sans)] text-lg sm:text-xl md:text-2xl"
+                  >
+                    View All Work
+                    <FaArrowRight className="text-lg transition-transform duration-300 group-hover:translate-x-1" />
+                  </a>
+                </div>
               </div>
             </div>
           </section>
