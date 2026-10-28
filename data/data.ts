@@ -25,6 +25,14 @@ export const WORK_PROJECTS = [
     link: "https://asce-uok.edu.pk/",
     image: "/images/projects/asce.png",
   },
+   {
+    id: "health-tracker",
+    title: "Health Tracker",
+    category: "AI Product Engineering",
+    live: true,
+    link: "https://health-tracker-ai-psi.vercel.app/",
+    image: "/images/projects/health-tracker.png",
+  },
   {
     id: "ojec-arabia",
     title: "OJEC Arabia",
